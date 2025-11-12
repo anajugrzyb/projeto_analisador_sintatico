@@ -6,6 +6,7 @@
 import sys
 from lexical.scanner import Scanner
 from lexical.parser import Parser
+from lexical.syntax_tree import export_syntax_tree
 
 def main():
     filename = sys.argv[1] if len(sys.argv) > 1 else r"programa.mc"
@@ -18,6 +19,9 @@ def main():
             print("-", e)
         raise SystemExit(1)
     print("Programa válido (sintaxe OK).")
+    if parser.root is not None:
+        export_syntax_tree(parser.root, "syntax_tree.dot")
+        print("Árvore sintática exportada para 'syntax_tree.dot'.")
 
 if __name__ == "__main__":
     main()
