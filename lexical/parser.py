@@ -104,6 +104,7 @@ class Parser:
         node = SyntaxNode("corpo")
         node.add_child(self.secaoDeclaracoes())
         node.add_child(self.listaComandos())
+        print("Bloco de comandos analisado")
         return node
 
     def secaoDeclaracoes(self):
@@ -123,7 +124,12 @@ class Parser:
 
     def declaracao(self):
         node = SyntaxNode("declaracao")
-        node.add_child(self._consume(TokenType.IDENTIFIER, "esperado identificador na declaração"))
+        identificador = self._consume(
+            TokenType.IDENTIFIER, "esperado identificador na declaração"
+        )
+        node.add_child(identificador)
+        if identificador is not None and identificador.token is not None:
+            print(f"Declarado identificador: {identificador.token.value}")
         node.add_child(self._consume(TokenType.COLON, "esperado ':' após identificador"))
         node.add_child(self.tipo())
         node.add_child(self._consume(TokenType.SEMICOLON, "esperado ';' ao final da declaração"))
@@ -173,19 +179,31 @@ class Parser:
 
     def atribuicao(self):
         node = SyntaxNode("atribuicao")
-        node.add_child(self._consume(TokenType.IDENTIFIER, "esperado identificador na atribuição"))
+        identificador = self._consume(
+            TokenType.IDENTIFIER, "esperado identificador na atribuição"
+        )
+        node.add_child(identificador)
         node.add_child(self._consume(TokenType.ASSIGN_LEFT, "esperado '<-' após identificador"))
         node.add_child(self.expressaoAritmetica())
         node.add_child(self._consume(TokenType.SEMICOLON, "esperado ';' ao final da atribuição"))
+        if identificador is not None and identificador.token is not None:
+            print(f"Atribuição feita para: {identificador.token.value}")
         return node
 
     def leitura(self):
         node = SyntaxNode("leitura")
         node.add_child(self._consume_kw("input", "esperado 'input'"))
         node.add_child(self._consume(TokenType.LPAREN, "esperado '(' após 'input'"))
-        node.add_child(self._consume(TokenType.IDENTIFIER, "esperado identificador dentro de input(...)", label="IDENTIFIER"))
+        identificador = self._consume(
+            TokenType.IDENTIFIER,
+            "esperado identificador dentro de input(...)",
+            label="IDENTIFIER",
+        )
+        node.add_child(identificador)
         node.add_child(self._consume(TokenType.RPAREN, "esperado ')' após input(...)", label="RPAREN"))
         node.add_child(self._consume(TokenType.SEMICOLON, "esperado ';' ao final de input(...)"))
+        if identificador is not None and identificador.token is not None:
+            print(f"Leitura de variável: {identificador.token.value}")
         return node
 
     def escrita(self):
